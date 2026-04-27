@@ -457,6 +457,7 @@ textarea { resize: vertical; min-height: 60px; }
 
 <script>
 const STORAGE_KEY = 'iwan_konten_tracker';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxJqB-yycGi6PXcgIJTErVgARqCKfMmx5l0jcjPmMlD4kkZ-Q_kW25N4Be5UMPGdNAN/exec';
 let entries = [];
 let currentFilter = 'all';
 
@@ -562,6 +563,19 @@ function renderList() {
   }).join('');
 }
 
+async function kirimKeSheets(entry) {
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(entry)
+    });
+  } catch(e) {
+    console.log('Gagal kirim ke Sheets:', e);
+  }
+}
+
 function addEntry() {
   const date = document.getElementById('inputDate').value;
   const akun = document.getElementById('inputAkun').value;
@@ -579,6 +593,7 @@ function addEntry() {
 
   entries.unshift({ date, akun, title, note, link, bonus, platforms, id: Date.now() });
   saveData();
+  kirimKeSheets({ date, akun, title, note, link, bonus, platforms });
   updateStats();
   renderList();
 
