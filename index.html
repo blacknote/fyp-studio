@@ -563,7 +563,7 @@ function renderList() {
   }).join('');
 }
 
-async function kirimKeSheets(entry) {
+function kirimKeSheets(entry) {
   try {
     const platforms = (entry.platforms || []).join(',');
     const params = new URLSearchParams({
@@ -575,9 +575,10 @@ async function kirimKeSheets(entry) {
       bonus: entry.bonus || '',
       platforms: platforms
     });
-    const url = SHEET_URL + '?' + params.toString();
-    const img = new Image();
-    img.src = url;
+    const script = document.createElement('script');
+    script.src = SHEET_URL + '?' + params.toString();
+    document.body.appendChild(script);
+    setTimeout(() => script.remove(), 5000);
   } catch(e) {
     console.log('Gagal kirim ke Sheets:', e);
   }
