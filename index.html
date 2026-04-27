@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracker Konten — I Konek</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f6ff;
+  --surface: #ffffff;
+  --surface2: #e8f1fb;
+  --border: #c5d9f0;
+  --accent: #1877f2;
+  --accent2: #0ea5e9;
+  --accent3: #6366f1;
+  --text: #1a2540;
+  --muted: #6b84a8;
+  --tiktok: #ff0050;
+  --ig: #e1306c;
+  --fb: #1877f2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 80px;
+}
+header {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.header-left h1 {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+.header-left p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.month-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: var(--accent);
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat {
+  background: var(--surface);
+  padding: 16px 20px;
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 5px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.stat.green .stat-num { color: #0ea5e9; }
+.stat.blue .stat-num { color: #1877f2; }
+.stat.pink .stat-num { color: #6366f1; }
+.stat.gold .stat-num { color: #f59e0b; }
+
+.form-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 1px;
+}
+.form-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin-bottom: 14px;
+  font-family: 'Space Mono', monospace;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 11px; color: var(--muted); }
+input, select, textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  padding: 9px 12px;
+  width: 100%;
+  outline: none;
+  transition: border-color .2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+}
+select option { background: #ffffff; }
+textarea { resize: vertical; min-height: 60px; }
+.form-full { grid-column: 1 / -1; }
+
+.btn-add {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .03em;
+  transition: opacity .15s, transform .1s;
+  margin-top: 4px;
+}
+.btn-add:hover { opacity: .88; }
+.btn-add:active { transform: scale(0.98); }
+
+.list-section { padding: 0 24px; }
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 10px;
+}
+.list-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+}
+.filter-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.filter-btn {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  transition: all .15s;
+}
+.filter-btn.active, .filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(24,119,242,.08);
+}
+
+.entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: start;
+  transition: border-color .2s, box-shadow .2s;
+}
+.entry:hover { border-color: var(--accent2); box-shadow: 0 2px 12px rgba(14,165,233,.1); }
+.platform-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.entry-body {}
+.entry-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.entry-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.tag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: 'Space Mono', monospace;
+}
+.tag-tiktok { background: rgba(255,0,80,.1); color: #cc0040; }
+.tag-ig { background: rgba(225,48,108,.1); color: #b02257; }
+.tag-fb { background: rgba(24,119,242,.12); color: #1255b8; }
+.tag-date { background: var(--surface2); color: var(--muted); }
+.tag-akun { background: rgba(14,165,233,.12); color: #0369a1; }
+.entry-desc {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+.entry-bonus {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  color: var(--accent);
+  white-space: nowrap;
+  font-weight: 700;
+}
+.btn-del {
+  background: transparent;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 0 0 8px;
+  line-height: 1;
+  transition: color .15s;
+}
+.btn-del:hover { color: #e53e3e; }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 13px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.empty-state .icon { font-size: 28px; margin-bottom: 8px; }
+
+.recap-section {
+  margin: 16px 24px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.recap-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.recap-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+.recap-row:last-child { border-bottom: none; font-weight: 600; color: var(--accent); font-family: 'Space Mono', monospace; }
+.recap-row span:first-child { color: var(--muted); }
+
+.export-btn {
+  display: block;
+  width: calc(100% - 48px);
+  margin: 14px 24px 0;
+  padding: 11px;
+  background: var(--surface2);
+  color: var(--accent2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color .2s, background .2s;
+}
+.export-btn:hover { border-color: var(--accent2); background: rgba(14,165,233,.08); }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--accent);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  z-index: 999;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .entry { grid-template-columns: auto 1fr auto; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center;gap:16px">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="48" height="48" rx="12" fill="#1877f2"/>
+      <rect width="48" height="48" rx="12" fill="url(#grad)" opacity="0.2"/>
+      <defs>
+        <linearGradient id="grad" x1="0" y1="0" x2="48" y2="48">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#0ea5e9"/>
+        </linearGradient>
+      </defs>
+      <polygon points="18,13 18,35 36,24" fill="#ffffff"/>
+      <rect x="10" y="13" width="4" height="22" rx="2" fill="#bfdbfe"/>
+      <rect x="10" y="13" width="12" height="4" rx="2" fill="#bfdbfe"/>
+      <rect x="10" y="22" width="9" height="4" rx="2" fill="#bfdbfe"/>
+    </svg>
+    <div>
+      <div style="font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:#1877f2;letter-spacing:-1px;line-height:1">FYP Studio</div>
+      <div style="font-size:11px;color:#6b84a8;margin-top:3px;letter-spacing:.04em">Content Tracker</div>
+    </div>
+  </div>
+  <div class="month-badge" id="monthBadge">—</div>
+</header>
+
+<div class="stats-row">
+  <div class="stat green">
+    <div class="stat-num" id="statTotal">0</div>
+    <div class="stat-label">Total Video</div>
+  </div>
+  <div class="stat blue">
+    <div class="stat-num" id="statTiktok">0</div>
+    <div class="stat-label">TikTok</div>
+  </div>
+  <div class="stat pink">
+    <div class="stat-num" id="statIG">0</div>
+    <div class="stat-label">Instagram</div>
+  </div>
+  <div class="stat gold">
+    <div class="stat-num" id="statBonus">0</div>
+    <div class="stat-label">Bonus (rb)</div>
+  </div>
+</div>
+
+<div class="form-section">
+  <div class="form-title">// Catat konten baru</div>
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Tanggal upload</label>
+      <input type="date" id="inputDate">
+    </div>
+    <div class="form-group">
+      <label>Akun TikTok (basis hitung)</label>
+      <select id="inputAkun">
+        <option value="Ikonek Purbalingga">Ikonek Purbalingga</option>
+        <option value="Purwokerto FYP">Purwokerto FYP</option>
+        <option value="Dinar Mustofa">Dinar Mustofa</option>
+        <option value="Daily Ziana">Daily Ziana</option>
+      </select>
+    </div>
+    <div class="form-group form-full">
+      <label>Juga diupload di (opsional — hanya pendataan)</label>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:4px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer">
+          <input type="checkbox" id="chkIG" style="width:15px;height:15px;accent-color:#e1306c"> Instagram
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer">
+          <input type="checkbox" id="chkFB" style="width:15px;height:15px;accent-color:#1877f2"> Facebook
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text);cursor:pointer">
+          <input type="checkbox" id="chkYT" style="width:15px;height:15px;accent-color:#ff0000"> YouTube
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Bonus per konten (Rp)</label>
+      <input type="number" id="inputBonus" value="10000" min="0" step="1000">
+    </div>
+    <div class="form-group form-full">
+      <label>Judul / deskripsi singkat konten</label>
+      <input type="text" id="inputTitle" placeholder="Contoh: Video promosi pemasangan wifi baru...">
+    </div>
+    <div class="form-group form-full">
+      <label>Link konten (untuk validasi)</label>
+      <input type="url" id="inputLink" placeholder="https://www.tiktok.com/@... atau https://instagram.com/...">
+    </div>
+    <div class="form-group form-full">
+      <label>Catatan (opsional)</label>
+      <textarea id="inputNote" placeholder="Views, engagement, atau info lain..."></textarea>
+    </div>
+  </div>
+  <button class="btn-add" onclick="addEntry()">+ CATAT KONTEN</button>
+</div>
+
+<div class="recap-section">
+  <div class="recap-title">// Rekap bulan ini</div>
+  <div class="recap-row"><span>Total video TikTok (basis bonus)</span><span id="recapTiktok">0 video</span></div>
+  <div class="recap-row"><span>Juga di Instagram</span><span id="recapIG">0 video</span></div>
+  <div class="recap-row"><span>Juga di Facebook</span><span id="recapFB">0 video</span></div>
+  <div class="recap-row"><span>Juga di YouTube</span><span id="recapYT">0 video</span></div>
+  <div class="recap-row"><span>Gaji harian (est. 23 hari)</span><span id="recapGaji">Rp 0</span></div>
+  <div class="recap-row"><span>Total bonus konten</span><span id="recapBonus">Rp 0</span></div>
+  <div class="recap-row"><span>TOTAL GAJI IWAN</span><span id="recapTotal">Rp 0</span></div>
+</div>
+
+<div class="list-section">
+  <div class="list-header">
+    <div class="list-title">// Log konten</div>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all', this)">Semua</button>
+    <button class="filter-btn" onclick="setFilter('ig', this)">+ Instagram</button>
+    <button class="filter-btn" onclick="setFilter('fb', this)">+ Facebook</button>
+    <button class="filter-btn" onclick="setFilter('yt', this)">+ YouTube</button>
+  </div>
+  <div id="entryList"></div>
+</div>
+
+<button class="export-btn" onclick="exportCSV()">↓ Export CSV untuk rekap gaji</button>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'iwan_konten_tracker';
+let entries = [];
+let currentFilter = 'all';
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    entries = saved ? JSON.parse(saved) : [];
+  } catch(e) { entries = []; }
+}
+
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch(e) {}
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+function formatRp(n) {
+  return 'Rp ' + n.toLocaleString('id-ID');
+}
+
+function updateStats() {
+  const now = new Date();
+  const thisMonth = entries.filter(e => {
+    const d = new Date(e.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
+  const total = thisMonth.length;
+  const ig = thisMonth.filter(e => e.platforms && e.platforms.includes('Instagram')).length;
+  const fb = thisMonth.filter(e => e.platforms && e.platforms.includes('Facebook')).length;
+  const yt = thisMonth.filter(e => e.platforms && e.platforms.includes('YouTube')).length;
+  const totalBonus = thisMonth.reduce((s, e) => s + (e.bonus || 10000), 0);
+  const gajiHarian = 40000 * 23;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statTiktok').textContent = total;
+  document.getElementById('statIG').textContent = ig;
+  document.getElementById('statBonus').textContent = Math.round(totalBonus / 1000);
+
+  document.getElementById('recapTiktok').textContent = total + ' video';
+  document.getElementById('recapIG').textContent = ig + ' video';
+  document.getElementById('recapFB').textContent = fb + ' video';
+  document.getElementById('recapYT').textContent = yt + ' video';
+  document.getElementById('recapGaji').textContent = formatRp(gajiHarian);
+  document.getElementById('recapBonus').textContent = formatRp(totalBonus);
+  document.getElementById('recapTotal').textContent = formatRp(gajiHarian + totalBonus);
+
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  document.getElementById('monthBadge').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+}
+
+function renderList() {
+  const list = document.getElementById('entryList');
+  let filtered = entries;
+  if (currentFilter === 'ig') filtered = entries.filter(e => e.platforms && e.platforms.includes('Instagram'));
+  else if (currentFilter === 'fb') filtered = entries.filter(e => e.platforms && e.platforms.includes('Facebook'));
+  else if (currentFilter === 'yt') filtered = entries.filter(e => e.platforms && e.platforms.includes('YouTube'));
+  filtered = [...filtered].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📹</div><div>Belum ada konten yang dicatat</div></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map((e) => {
+    const realIdx = entries.indexOf(e);
+    const dateStr = new Date(e.date).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+    const platColors = {Instagram:'#e1306c', Facebook:'#1877f2', YouTube:'#ff0000'};
+    const extraPlatforms = (e.platforms || []).map(p =>
+      `<span style="font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.08);color:${platColors[p]||'#aaa'};font-family:'Space Mono',monospace">+${p}</span>`
+    ).join('');
+    return `
+    <div class="entry">
+      <div class="platform-dot" style="background:#ff0050;margin-top:5px;flex-shrink:0"></div>
+      <div class="entry-body">
+        <div class="entry-title">${e.title || '(tanpa judul)'}</div>
+        <div class="entry-meta">
+          <span class="tag tag-tiktok">TikTok</span>
+          <span class="tag tag-akun">${e.akun}</span>
+          ${extraPlatforms}
+          <span class="tag tag-date">${dateStr}</span>
+        </div>
+        ${e.note ? `<div class="entry-desc">${e.note}</div>` : ''}
+        ${e.link ? `<a href="${e.link}" target="_blank" style="font-size:11px;color:var(--accent2);text-decoration:none;display:inline-block;margin-top:5px;word-break:break-all;">&#x1F517; ${e.link}</a>` : ''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div class="entry-bonus">+${formatRp(e.bonus || 10000)}</div>
+        <button class="btn-del" onclick="deleteEntry(${realIdx})" title="Hapus">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addEntry() {
+  const date = document.getElementById('inputDate').value;
+  const akun = document.getElementById('inputAkun').value;
+  const title = document.getElementById('inputTitle').value.trim();
+  const note = document.getElementById('inputNote').value.trim();
+  const link = document.getElementById('inputLink').value.trim();
+  const bonus = parseInt(document.getElementById('inputBonus').value) || 10000;
+
+  const platforms = [];
+  if (document.getElementById('chkIG').checked) platforms.push('Instagram');
+  if (document.getElementById('chkFB').checked) platforms.push('Facebook');
+  if (document.getElementById('chkYT').checked) platforms.push('YouTube');
+
+  if (!date) { showToast('Isi tanggal dulu!'); return; }
+
+  entries.unshift({ date, akun, title, note, link, bonus, platforms, id: Date.now() });
+  saveData();
+  updateStats();
+  renderList();
+
+  document.getElementById('inputTitle').value = '';
+  document.getElementById('inputNote').value = '';
+  document.getElementById('inputLink').value = '';
+  document.getElementById('chkIG').checked = false;
+  document.getElementById('chkFB').checked = false;
+  document.getElementById('chkYT').checked = false;
+  showToast('Konten berhasil dicatat!');
+}
+
+function deleteEntry(idx) {
+  if (!confirm('Hapus entri ini?')) return;
+  entries.splice(idx, 1);
+  saveData();
+  updateStats();
+  renderList();
+  showToast('Entri dihapus.');
+}
+
+function exportCSV() {
+  if (!entries.length) { showToast('Belum ada data!'); return; }
+  const now = new Date();
+  const rows = [['Tanggal','Akun TikTok','Judul','Link Konten','Juga di Instagram','Juga di Facebook','Juga di YouTube','Catatan','Bonus (Rp)']];
+  entries.forEach(e => {
+    const pl = e.platforms || [];
+    rows.push([e.date, e.akun, e.title || '', e.link || '',
+      pl.includes('Instagram') ? 'Ya' : '',
+      pl.includes('Facebook') ? 'Ya' : '',
+      pl.includes('YouTube') ? 'Ya' : '',
+      e.note || '', e.bonus || 10000]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `konten_iwan_${now.getMonth()+1}_${now.getFullYear()}.csv`;
+  a.click();
+  showToast('CSV berhasil diexport!');
+}
+
+// Init
+document.getElementById('inputDate').valueAsDate = new Date();
+loadData();
+updateStats();
+renderList();
+</script>
+</body>
+</html>
